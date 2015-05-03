@@ -10,19 +10,34 @@ print contents
 
 jjob = json.loads(contents)
 print "DETAIL\n"
-print jjob['results'][0]['detail']
+detail =  '\"' + jjob['results'][0]['detail'] +'\"'
+print detail
 
 print "COMPDETAIL\n"
+compDetail = "["
 for compdetail in jjob['results'][0]['compDetail']:
-	print compdetail['w'],
-	print compdetail['h'],
+	compDetail += '{\"w\":'
+	compDetail += compdetail['w']
+	compDetail += '\",\"h\":'
+	compDetail += compdetail['h']
+	compDetail += '\"}'
+compDetail += ']'
+print compDetail
 
 print "EXAMPLES\n"
+Example = "["
 for example in jjob['results'][0]['examples']:
-	print example['w'],
-	print example['p'],
-	print example['m'],
-	print example['h'],
+	Example += '{\"w\":'
+	Example += example['w']
+	Example += '\",\"p\":'
+	Example += example['p']
+	Example += '\",\"m\":'
+	Example += example['m']
+	Example += '\",\"h\":'
+	Example += example['h']
+	Example += '\"}'
+Example += ']'
+print Example
 
 
 
