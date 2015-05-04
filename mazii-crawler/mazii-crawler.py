@@ -7,13 +7,12 @@ import traceback
 import socket
 import timeit
 import random
+from termcolor import colored
 
 
-
-def switchProxy():
+def switchProxy(name):
 	proxy = []
 	proxy.append("http://222.255.237.69:3128")
-	proxy.append("http://222.255.27.150:3128")
 	proxy.append("http://115.84.178.93:3128")
 	proxy.append("http://123.30.58.182:11")
 	proxy.append("http://123.30.41.118:3128")
@@ -21,13 +20,19 @@ def switchProxy():
 	proxy.append("http://118.70.13.161:443")
 	proxy.append("http://14.169.71.3:3128")
 	proxy.append("http://103.42.56.2:42")
-	
-	
-	
-	
-	
+	proxy.append("http://213.85.92.10:80")
+	proxy.append("http://203.90.130.161:1080")
+	proxy.append("http://124.200.98.154:8118")
+	proxy.append("http://124.202.169.226:8118")
+	proxy.append("http://120.203.149.104:8118")
+	proxy.append("http://183.207.229.200:80")
+	proxy.append("http://218.204.143.85:8118")
+	proxy.append("http://211.141.82.246:8118")
+	if name is None:
+		number = 0
+	else:
+		number = proxy.index(name)+1
 	proxy_flag = 1
-	number = 0
 	while proxy_flag ==1:
 		if number>=len(proxy):
 			number = 0
@@ -38,7 +43,7 @@ def switchProxy():
 		except KeyboardInterrupt:
 			sys.exit()
 		except:
-			print "This proxy "+proxy[number]+" is blocked. Switching to another proxy."
+			print colored("This proxy "+proxy[number]+" is blocked. Switching to another proxy.", 'yellow')
 			proxy_flag = 1
 			number+=1
 
@@ -74,7 +79,7 @@ def appendData(conn,curs, item, contents):
 			compDetail += '\",\"h\":\"'
 			compDetail += compdetail['h'] if compdetail['h'] else ' '
 			compDetail += '\"}'
-		compDetail += ']'
+	compDetail += ']'
 
 	# print "EXAMPLES\n"
 	Example = "["
@@ -90,7 +95,7 @@ def appendData(conn,curs, item, contents):
 			Example += '\",\"h\":\"'
 			Example += example['h'] if example['h'] else ' '
 			Example += '\"}'
-		Example += ']'
+	Example += ']'
 
 	curs.execute('UPDATE kanji SET detail= ?,compDetail= ?, examples = ? WHERE id=?',(detail,compDetail, Example,item,))
 	conn.commit()
@@ -99,7 +104,7 @@ def main():
 	database_name = "javn.db"#str(raw_input("File name: "))
 	table_name = "kanji" #str(raw_input("Enter table name: "))
 	rows = 1 #int(raw_input("Number of row: "))
-	proxy = ""
+	proxy = None
 	initial = 0
 	fro = int(raw_input("From id: "))
 	to = int(raw_input("To id: "))
@@ -115,7 +120,7 @@ def main():
 		data = cur.fetchall()
 		for row in data:
 			if initial == 0:
-				proxy = switchProxy()
+				proxy = switchProxy(proxy)
 				initial = 1
 			check = 0
 			while(check!=1):
@@ -130,16 +135,24 @@ def main():
 					check = 1
 				except KeyboardInterrupt:
 					sys.exit()
+
 				except urllib2.HTTPError, e:
-					proxy = switchProxy()
+					proxy = switchProxy(proxy)
 				except urllib2.URLError, e:
-					print "HTTP 404 File Not Found"
+					print colored("HTTP 404 File Not Found", 'yellow')
+				except KeyError, e:
+					with open("error.log", "a") as myfile:
+						myfile.write("KeyError: kanji_id="+str(row[0])+" kanji_detail="+row[1].encode("utf-8")+'\n')
+					print colored("KeyError: kanji_id="+str(row[0])+" kanji_detail="+row[1].encode("utf-8"), 'yellow')
+					check = 1
 				except:
-					print sys.exc_info()[0]
+					print colored(sys.exc_info()[0], 'yellow')
+
 	except lite.Error, e:
 		print "Error %s" % e.args[0]
 		sys.exit()
 	finally:
 		if con:
 			con.close()
+	print '\033[93m' + "Everything done!"
 main()
