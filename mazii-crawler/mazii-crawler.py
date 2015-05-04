@@ -13,13 +13,19 @@ import random
 def switchProxy():
 	proxy = []
 	proxy.append("http://222.255.237.69:3128")
-	proxy.append("http://115.84.178.93:3128")
-	proxy.append("http://42.112.31.40:1234")
-	proxy.append("http://123.30.75.115:80")
-	proxy.append("http://118.70.13.161:443")
 	proxy.append("http://222.255.27.150:3128")
-	proxy.append("http://113.160.48.58:8080")
-	proxy.append("http://113.161.77.184:8080")
+	proxy.append("http://115.84.178.93:3128")
+	proxy.append("http://123.30.58.182:11")
+	proxy.append("http://123.30.41.118:3128")
+	proxy.append("http://112.213.95.169:91")
+	proxy.append("http://118.70.13.161:443")
+	proxy.append("http://14.169.71.3:3128")
+	proxy.append("http://103.42.56.2:42")
+	
+	
+	
+	
+	
 	proxy_flag = 1
 	number = 0
 	while proxy_flag ==1:
@@ -41,7 +47,7 @@ def readSoup(word,proxy):
 	proxy_support = urllib2.ProxyHandler({"http":proxy})  
 	opener = urllib2.build_opener(proxy_support)  
 	url='http://mazii.net/api/mazii/'+word+'/10'  
-	page = opener.open(url)  
+	page = opener.open(url,timeout = 10)  
 	contents=page.read()  
 	return contents  
 
