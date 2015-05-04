@@ -5,6 +5,8 @@ import json
 import sys
 import traceback
 import socket
+import timeit
+
 def readSoup(word,proxy):
 	proxy_support = urllib2.ProxyHandler({"http":proxy})  
 	opener = urllib2.build_opener(proxy_support)  
@@ -44,9 +46,8 @@ def appendData(conn,curs, item, contents):
 	if jjob['results'][0]['examples'] != None:
 		for example in jjob['results'][0]['examples']:
 			Example += '{\"w\":\"'
-			print example['w']
+			# print example['w']
 			Example += example['w'] if example['w'] else ' '
-
 			Example += '\",\"p\":\"'
 			Example += example['p'] if example['p'] else ' '
 			Example += '\",\"m\":\"'
@@ -67,7 +68,7 @@ def main():
 	fro = int(raw_input("From id: "))
 	to = int(raw_input("To id: "))
 	ip = socket.gethostbyname('mazii.net')
-	print type(ip)
+	# print type(ip)
 	con = None
 	try:
 		check = 0
@@ -79,26 +80,40 @@ def main():
 		for row in data:
 			if check == 0:
 				try:
+					start = timeit.default_timer()
 					contents = getSource(row[1].encode("utf-8"))
-					print contents
+					# print contents
 					appendData(con,cur,row[0],contents)
 					count +=1
-					print "Crawl data from http://mazii.net ("+ip+"): data_seq="+ str(count)+" kanji_id="+str(row[0])+" kanji_detail="+str(row[1].encode("utf-8"))+" proxy=None"
+					stop = timeit.default_timer()
+					print "Crawl data from http://mazii.net ("+ip+"): data_seq="+ str(count)+" kanji_id="+str(row[0])+" kanji_detail="+str(row[1].encode("utf-8"))+" proxy=None ttl="+str(round(stop - start,4))+'s'
 				except KeyboardInterrupt:
 					sys.exit()
+				except urllib2.HTTPError, e:
+					print "This ip is blocked. Switching to proxy "+proxy
+					check = 1
+				except urllib2.URLError, e:
+					print "HTTP 404 File Not Found"
 				except:
 					print sys.exc_info()[0]
 					# traceback.print_exc(file=sys.stdout)
 					check = 1
 			if check ==1:
 				try:
+					start = timeit.default_timer()
 					contents = readSoup(row[1].encode("utf-8"),proxy)
-					print contents
+					# print contents
 					appendData(con,cur,row[0],contents)
 					count +=1
-					print "Crawl data from http://mazii.net ("+ip+"): data_seq="+ str(count)+" kanji_id="+str(row[0])+" kanji_detail="+str(row[1].encode("utf-8"))+" proxy="+proxy
+					stop = timeit.default_timer()
+					print "Crawl data from http://mazii.net ("+ip+"): data_seq="+ str(count)+" kanji_id="+str(row[0])+" kanji_detail="+str(row[1].encode("utf-8"))+" proxy="+proxy+" ttl="+str(round(stop - start,4))+'s'
 				except KeyboardInterrupt:
 					sys.exit()
+				except urllib2.HTTPError, e:
+					print "This proxy is blocked. Switching to main ip."
+					check = 0
+				except urllib2.URLError, e:
+					print "HTTP 404 File Not Found"
 				except:
 					print sys.exc_info()[0]
 					# traceback.print_exc(file=sys.stdout)

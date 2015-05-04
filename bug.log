@@ -1,1 +1,5 @@
 #1: if example[0][p] null program will corrupt
+#2: cath all exception from http request and data exception
+#3: need error.log to catch error in the future.
+#4: mazii will fix this server to prevent cralwer. make auto switch proxy feature.
+#5: add time counter like ping
